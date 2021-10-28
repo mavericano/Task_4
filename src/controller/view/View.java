@@ -15,10 +15,11 @@ public class View {
         +DeleteBook
         +FindBook
         +EditBook
-        Register
-        SignIn
-        SignOut
-        validation
+        +Register
+        +CheckRights
+        +SignIn
+        +SignOut
+        validation (use)
         Exceptions
      */
 

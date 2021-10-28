@@ -19,6 +19,7 @@ public class CommandProvider {
         commands.put("ADD_BOOK", new AddBook());
         commands.put("VIEW_BOOKS", new ViewBooks());
         commands.put("EDIT_BOOK", new EditBook());
+        commands.put("CHECK_RIGHTS", new CheckRights());
     }
 
     public Command createCommand(RRContainer request) {

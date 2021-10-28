@@ -17,9 +17,9 @@ public class FindBook implements Command {
         int year = (int) request.model.get("year");
         String genre = (String) request.model.get("genre");
 
-        List<Book> books = Service.findBooks(new Book(name, author, year, genre));
-        Map<String, Object> result = new HashMap<>();
-        result.put("books", books);
-        return new RRContainer("success", result);
+        List<Book> books = Service.findBooks(name, author, year, genre);
+        Map<String, Object> model = new HashMap<>();
+        model.put("books", books);
+        return new RRContainer("success", model);
     }
 }
