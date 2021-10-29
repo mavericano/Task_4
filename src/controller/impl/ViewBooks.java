@@ -14,12 +14,13 @@ public class ViewBooks implements Command {
     @Override
     public RRContainer execute(RRContainer request) {
         List<Book> books;
+        Map<String, Object> model = new HashMap<>();
         try {
             books = Service.getAllBooks();
         } catch (ServiceException e) {
-            return new RRContainer("fail", new HashMap<>());
+            model.put("message", e.getMessage());
+            return new RRContainer("fail", model);
         }
-        Map<String, Object> model = new HashMap<>();
         model.put("books", books);
         return new RRContainer("success", model);
     }

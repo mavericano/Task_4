@@ -46,7 +46,21 @@ public class Service {
         }
     }
 
-    public static void removeBook(Book book) throws ServiceException{
+    public static void removeBook(String name, String author, int year, String genre) throws ServiceException{
+        if (!isValidBookName(name)) {
+            throw new ServiceException("Некорректное название книги");
+        }
+        if (!isValidAuthorName(author)) {
+            throw new ServiceException("Некорректное имя автора");
+        }
+        if (!isValidReleaseYear(year)) {
+            throw new ServiceException("Некорректный год публикации книги");
+        }
+        if (!isValidGenre(genre)) {
+            throw new ServiceException("Некорректный жанр книги");
+        }
+        Book book = new Book(name, author, year, genre);
+
         try {
             FactoryDAO.getInstance().getBookDAO().removeBook(book);
         } catch (DAOException e) {
@@ -134,23 +148,27 @@ public class Service {
         return result;
     }
 
-//    private static List<Book> findEqual(Book book) {
-//        List<Book> result = new ArrayList<>();
-//        try {
-//            List<Book> books = FactoryDAO.getInstance().getBookDAO().readBooks();
-//            for (Book currentBook : books) {
-//                if (currentBook.equals(book)) result.add(currentBook);
-//            }
-//        } catch (DAOException e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
+    public static void editBook(String name, String author, int year, String genre, String newName, String newAuthor, int newYear, String newGenre) throws ServiceException {
+        if (!isValidBookName(name) || !isValidBookName(newName)) {
+            throw new ServiceException("Некорректное название книги");
+        }
+        if (!isValidAuthorName(author) || !isValidAuthorName(newAuthor)) {
+            throw new ServiceException("Некорректное имя автора");
+        }
+        if (!isValidReleaseYear(year) || !isValidReleaseYear(newYear)) {
+            throw new ServiceException("Некорректный год публикации книги");
+        }
+        if (!isValidGenre(genre) || !isValidGenre(newGenre)) {
+            throw new ServiceException("Некорректный жанр книги");
+        }
 
-    public static void editBook(Book book, Book newBook) throws ServiceException {
+        Book book = new Book(name, author, year, genre);
+        Book newBook = new Book(newName, newAuthor, newYear, newGenre);
+
         try {
             List<Book> books = FactoryDAO.getInstance().getBookDAO().readBooks();
             while (books.remove(book)) {
+                FactoryDAO.getInstance().getBookDAO().removeBook(book);
                 FactoryDAO.getInstance().getBookDAO().addBook(newBook);
             }
         } catch (DAOException e) {
@@ -158,7 +176,14 @@ public class Service {
         }
     }
 
-    public static void register(User user) throws ServiceException {
+    public static void register(String username, String password) throws ServiceException {
+        if (!isValidUsername(username)) {
+            throw new ServiceException("Некорректное имя пользователя");
+        }
+        if (!isValidPassword(password)) {
+            throw new ServiceException("Некорректный пароль");
+        }
+        User user = new User(username, password);
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
             if (!users.contains(user)) {
@@ -171,14 +196,26 @@ public class Service {
         }
     }
 
-    public static boolean checkRights(User user) throws ServiceException {
+    public static boolean checkRights(String username, String password) throws ServiceException {
+        if (!isValidUsername(username)) {
+            throw new ServiceException("Некорректное имя пользователя");
+        }
+        if (!isValidPassword(password)) {
+            throw new ServiceException("Некорректный пароль");
+        }
         boolean result = false;
+        boolean found = false;
+        User user = new User(username, password);
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
             for (User currentUser : users) {
                 if (currentUser.getUsername().equals(user.getUsername()) && currentUser.getPassword().equals(user.getPassword())) {
                     result = currentUser.isAdmin();
+                    found = true;
                 }
+            }
+            if (!found) {
+                throw new ServiceException("Данного пользователя не существует");
             }
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -186,18 +223,25 @@ public class Service {
         return result;
     }
 
-    public static boolean signIn(User user) throws ServiceException {
-        boolean result = false;
+    public static boolean signIn(String username, String password) throws ServiceException {
+        if (!isValidUsername(username)) {
+            throw new ServiceException("Некорректное имя пользователя");
+        }
+        if (!isValidPassword(password)) {
+            throw new ServiceException("Некорректный пароль");
+        }
+        User user = new User(username, password);
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
             if (users.contains(user)) {
-                result = true;
                 currentUser = user;
+                return true;
+            } else {
+                throw new ServiceException("Данного пользователя не существует");
             }
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage(), e);
         }
-        return result;
     }
 
     public static void signOut() {

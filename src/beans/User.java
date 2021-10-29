@@ -45,7 +45,7 @@ public class User implements Serializable {
     }
 
     public String toFileString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(PARAMETER_DELIMITER).append(username).append(PARAMETER_DELIMITER);
         sb.append(PARAMETER_DELIMITER).append(password).append(PARAMETER_DELIMITER);

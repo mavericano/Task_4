@@ -1,11 +1,12 @@
 package controller.impl;
 
-import beans.Book;
 import controller.Command;
 import controller.connection.RRContainer;
 import service.Service;
+import service.ServiceException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class EditBook implements Command {
     @Override
@@ -20,10 +21,13 @@ public class EditBook implements Command {
         int newYear = (int) request.model.get("newYear");
         String newGenre = (String) request.model.get("newGenre");
 
-        Book book = new Book(name, author, year, genre);
-        Book newBook = new Book(newName, newAuthor, newYear, newGenre);
-
-        Service.editBook(book, newBook);
+        try {
+            Service.editBook(name, author, year, genre, newName, newAuthor, newYear, newGenre);
+        } catch (ServiceException e) {
+            Map<String, Object> model = new HashMap<>();
+            model.put("message", e.getMessage());
+            new RRContainer("fail", model);
+        }
 
         return new RRContainer("success", new HashMap<>());
     }

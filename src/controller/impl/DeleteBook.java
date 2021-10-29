@@ -1,11 +1,12 @@
 package controller.impl;
 
-import beans.Book;
 import controller.Command;
 import controller.connection.RRContainer;
 import service.Service;
+import service.ServiceException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class DeleteBook implements Command {
     @Override
@@ -14,8 +15,15 @@ public class DeleteBook implements Command {
         String author = (String) request.model.get("author");
         int year = (int) request.model.get("year");
         String genre = (String) request.model.get("genre");
-        Book book = new Book(name, author, year, genre);
-        Service.removeBook(book);
+
+
+        try {
+            Service.removeBook(name, author, year, genre);
+        } catch (ServiceException e) {
+            Map<String, Object> model = new HashMap<>();
+            model.put("message", e.getMessage());
+            return new RRContainer("fail", model);
+        }
         return new RRContainer("success", new HashMap<>());
     }
 }

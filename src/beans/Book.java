@@ -74,7 +74,7 @@ public class Book implements Serializable {
     }
 
     public String toFileString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(PARAMETER_DELIMITER).append(name).append(PARAMETER_DELIMITER);
         sb.append(PARAMETER_DELIMITER).append(author).append(PARAMETER_DELIMITER);
