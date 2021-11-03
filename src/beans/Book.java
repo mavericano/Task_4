@@ -74,14 +74,13 @@ public class Book implements Serializable {
     }
 
     public String toFileString() {
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(PARAMETER_DELIMITER).append(name).append(PARAMETER_DELIMITER);
-        sb.append(PARAMETER_DELIMITER).append(author).append(PARAMETER_DELIMITER);
-        sb.append(PARAMETER_DELIMITER).append(releaseYear).append(PARAMETER_DELIMITER);
-        sb.append(PARAMETER_DELIMITER).append(genre).append(PARAMETER_DELIMITER);
+        String sb = PARAMETER_DELIMITER + name + PARAMETER_DELIMITER +
+                PARAMETER_DELIMITER + author + PARAMETER_DELIMITER +
+                PARAMETER_DELIMITER + releaseYear + PARAMETER_DELIMITER +
+                PARAMETER_DELIMITER + genre + PARAMETER_DELIMITER;
 
-        return sb.toString();
+        return sb;
     }
 
     @Override

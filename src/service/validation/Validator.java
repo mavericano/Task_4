@@ -4,6 +4,7 @@ import java.time.Year;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class Validator {
 
     public static boolean isValidUsername(String username) {
@@ -23,6 +24,10 @@ public class Validator {
         isValid &= matcher.find();
 
         return isValid;
+    }
+
+    public static boolean isValidIsAdmin(String isAdmin) {
+        return isAdmin.matches("true|false");
     }
 
     public static boolean isValidBookName(String name) {

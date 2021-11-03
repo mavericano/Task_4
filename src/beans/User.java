@@ -45,13 +45,12 @@ public class User implements Serializable {
     }
 
     public String toFileString() {
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(PARAMETER_DELIMITER).append(username).append(PARAMETER_DELIMITER);
-        sb.append(PARAMETER_DELIMITER).append(password).append(PARAMETER_DELIMITER);
-        sb.append(PARAMETER_DELIMITER).append(isAdmin).append(PARAMETER_DELIMITER);
+        String sb = PARAMETER_DELIMITER + username + PARAMETER_DELIMITER +
+                PARAMETER_DELIMITER + password + PARAMETER_DELIMITER +
+                PARAMETER_DELIMITER + isAdmin + PARAMETER_DELIMITER;
 
-        return sb.toString();
+        return sb;
     }
 
     public boolean compareWithoutRights(User user) {

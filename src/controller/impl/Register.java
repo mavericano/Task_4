@@ -13,9 +13,10 @@ public class Register implements Command {
     public RRContainer execute(RRContainer request) {
         String username = (String) request.model.get("username");
         String password = (String) request.model.get("password");
+        String isAdmin = (String) request.model.get("isAdmin");
 
         try {
-            Service.register(username, password);
+            Service.register(username, password, isAdmin);
         } catch (ServiceException e) {
             Map<String, Object> model = new HashMap<>();
             model.put("message", e.getMessage());

@@ -2,6 +2,7 @@ package controller.connection;
 
 import java.util.Map;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class RRContainer {
     public final String header;
     public final Map<String, Object> model;

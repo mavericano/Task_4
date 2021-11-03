@@ -36,5 +36,4 @@ public class FileUserDAO implements UserDAO {
         }
         return result;
     }
-
 }

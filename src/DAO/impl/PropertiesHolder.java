@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PropertiesHolder {
-    private static Map<String, String> properties = new HashMap<>();
+    private static final Map<String, String> properties = new HashMap<>();
 
     static {
         properties.put("USERS_FILE_PATH", "resources/Users.txt");

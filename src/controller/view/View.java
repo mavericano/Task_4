@@ -11,26 +11,16 @@ import java.util.Map;
 import java.util.Scanner;
 
 
+@SuppressWarnings({"unchecked", "EnhancedSwitchMigration"})
 public class View {
 
     /*
     TODO:
-        Totally refactor sign in
         View:
-            +REMOVE HARDCODED loggedIn
-            REMOVE SignOut command and service
-            REMOVE CheckRights command and service
             Register
-            CheckRights
-            +SignIn
-            SignOut
-            +AddBook
-            +ViewAllBooks
-            +FindBook
-            +EditBook
-            +DeleteBook
+            +HasUsers
      */
-    private final static String BOOKS_MENU = """
+    private final static String ADMIN_BOOKS_MENU = """
             1. Просмотреть все книги
             2. Добавить книгу
             3. Отредактировать имеющуюся книгу
@@ -39,7 +29,7 @@ public class View {
             6. Выйти из учетной записи
             7. Добавить учетную запись
             8. Завершить работу""";
-    private final static String ADMIN_BOOKS_MENU = """
+    private final static String BOOKS_MENU = """
             1. Просмотреть все книги
             2. Добавить книгу
             3. Отредактировать имеющуюся книгу
@@ -54,93 +44,141 @@ public class View {
             2. Поиск по автору
             3. Поиск по году выпуска
             4. Поиск по жанру""";
+    private static final String NO_USERS_MESSAGE = "Пользоателей не обнаружено. Вам необходимо зарегистрироваться. Данный пользователь будет также являться администратором.";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String input;
         boolean toStay = true;
         User currentUser = null;
-        RRContainer request;
-        RRContainer response;
-        Map<String, Object> model = new HashMap<>();
+
         while (toStay) {
-            if (currentUser != null) {
-                if (currentUser.isAdmin()) {
-                    System.out.println(ADMIN_BOOKS_MENU);
-                    input = scanner.nextLine();
-                    if (input.matches("^[1-8]$")) {
-                        switch (input) {
-                            case "1":
-                                viewAllBooks();
-                                break;
-                            case "2":
-                                addBook();
-                                break;
-                            case "3":
-                                editBook();
-                                break;
-                            case "4":
-                                findBook();
-                                break;
-                            case "5":
-                                removeBook();
-                                break;
-                            case "6":
-                                currentUser = null;
-                                break;
-                            case "7":
-                                System.out.println("add");
-                                break;
-                            case "8":
-                                toStay = false;
+            if (hasUsers()) {
+                if (currentUser != null) {
+                    if (currentUser.isAdmin()) {
+                        System.out.println(ADMIN_BOOKS_MENU);
+                        input = scanner.nextLine();
+                        if (input.matches("^[1-8]$")) {
+                            switch (input) {
+                                case "1":
+                                    viewAllBooks();
+                                    break;
+                                case "2":
+                                    addBook();
+                                    break;
+                                case "3":
+                                    editBook();
+                                    break;
+                                case "4":
+                                    findBook();
+                                    break;
+                                case "5":
+                                    removeBook();
+                                    break;
+                                case "6":
+                                    currentUser = null;
+                                    break;
+                                case "7":
+                                    register();
+                                    break;
+                                case "8":
+                                    toStay = false;
+                            }
+                        } else {
+                            System.out.println("Некорректная комманда");
                         }
                     } else {
-                        System.out.println("Некорректная комманда");
+                        System.out.println(BOOKS_MENU);
+                        input = scanner.nextLine();
+                        if (input.matches("^[1-7]$")) {
+                            switch (input) {
+                                case "1":
+                                    viewAllBooks();
+                                    break;
+                                case "2":
+                                    addBook();
+                                    break;
+                                case "3":
+                                    editBook();
+                                    break;
+                                case "4":
+                                    findBook();
+                                    break;
+                                case "5":
+                                    removeBook();
+                                    break;
+                                case "6":
+                                    currentUser = null;
+                                    break;
+                                case "7":
+                                    toStay = false;
+                            }
+                        } else {
+                            System.out.println("Некорректная комманда");
+                        }
                     }
                 } else {
-                    System.out.println(BOOKS_MENU);
-                    input = scanner.nextLine();
-                    if (input.matches("^[1-8]$")) {
-                        switch (input) {
-                            case "1":
-                                viewAllBooks();
-                                break;
-                            case "2":
-                                addBook();
-                                break;
-                            case "3":
-                                editBook();
-                                break;
-                            case "4":
-                                findBook();
-                                break;
-                            case "5":
-                                removeBook();
-                                break;
-                            case "6":
-                                currentUser = null;
-                                break;
-                            case "7":
-                                toStay = false;
-                        }
+                    System.out.println(LOG_IN_MENU);
+                    currentUser = signIn();
+                    if (currentUser == null) {
+                        System.out.println("Данный пользователь не найден");
                     } else {
-                        System.out.println("Некорректная комманда");
+                        System.out.println("Добро пожаловать!");
                     }
                 }
             } else {
-                System.out.println(LOG_IN_MENU);
-                currentUser = signIn();
-                if (currentUser == null) {
-                    System.out.println("Данный пользователь не найден");
-                } else {
-                    System.out.println("Добро пожаловать!");
-                }
+                System.out.println(NO_USERS_MESSAGE);
+                register(true);
             }
         }
         System.out.println("Спасибо за использование!");
     }
 
-    public static User signIn() {
+    private static boolean hasUsers() {
+        RRContainer request;
+        RRContainer response;
+
+        request = new RRContainer("HAS_USERS", new HashMap<>());
+        response = CommandProvider.getInstance().createCommand(request).execute(request);
+
+        if ("success".equals(response.header)) {
+            return (boolean) response.model.get("hasUsers");
+        } else {
+            System.out.println(response.model.get("message"));
+            return false;
+        }
+    }
+
+    private static void register() {
+        register(false);
+    }
+
+    private static void register(boolean isFirst) {
+        RRContainer request;
+        RRContainer response;
+        Scanner scanner = new Scanner(System.in);
+        Map<String, Object> model = new HashMap<>();
+
+        System.out.println("Введите имя пользователя");
+        model.put("username", scanner.nextLine());
+        System.out.println("Введите пароль");
+        model.put("password", scanner.nextLine());
+        if (isFirst) {
+            model.put("isAdmin", "true");
+        } else {
+            System.out.println("Введите данные о том, является ли пользователь администратором (true/false)");
+            model.put("isAdmin", scanner.nextLine());
+        }
+
+        request = new RRContainer("REGISTER", model);
+        response = CommandProvider.getInstance().createCommand(request).execute(request);
+
+        if ("fail".equals(response.header)) {
+            System.out.println(response.model.get("message"));
+        }
+    }
+
+    private static User signIn() {
         RRContainer request;
         RRContainer response;
         Map<String, Object> model = new HashMap<>();
@@ -187,7 +225,7 @@ public class View {
         System.out.println(sb);
     }
 
-    @SuppressWarnings("uncheked")
+    @SuppressWarnings({"uncheked", "unchecked"})
     private static void viewAllBooks() {
         RRContainer request;
         RRContainer response;

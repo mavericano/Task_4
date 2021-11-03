@@ -1,19 +1,25 @@
 package controller.impl;
 
-import beans.User;
 import controller.Command;
 import controller.connection.RRContainer;
 import service.Service;
+import service.ServiceException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class GetCurrentUser implements Command {
+public class HasUsers implements Command {
     @Override
     public RRContainer execute(RRContainer request) {
-        User user = Service.getCurrentUser();
         Map<String, Object> model = new HashMap<>();
-        model.put("user", user);
+        boolean result;
+        try {
+            result = Service.hasUsers();
+        } catch (ServiceException e) {
+            model.put("message", e.getMessage());
+            return new RRContainer("fail", model);
+        }
+        model.put("hasUsers", result);
         return new RRContainer("success", model);
     }
 }

@@ -12,8 +12,6 @@ import static service.validation.Validator.*;
 
 public class Service {
 
-    private static User currentUser;
-
     public static List<Book> getAllBooks() throws ServiceException {
         List<Book> books;
         try {
@@ -176,14 +174,19 @@ public class Service {
         }
     }
 
-    public static void register(String username, String password) throws ServiceException {
+    public static void register(String username, String password, String isAdmin) throws ServiceException {
         if (!isValidUsername(username)) {
             throw new ServiceException("Некорректное имя пользователя");
         }
         if (!isValidPassword(password)) {
             throw new ServiceException("Некорректный пароль");
         }
-        User user = new User(username, password);
+        if (!isValidIsAdmin(isAdmin)) {
+            throw new ServiceException("Некорректные данные о правах пользователя");
+        }
+
+        User user = new User(username, password, Boolean.parseBoolean(isAdmin));
+
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
             if (!users.contains(user)) {
@@ -196,33 +199,6 @@ public class Service {
         }
     }
 
-    public static boolean checkRights(String username, String password) throws ServiceException {
-        if (!isValidUsername(username)) {
-            throw new ServiceException("Некорректное имя пользователя");
-        }
-        if (!isValidPassword(password)) {
-            throw new ServiceException("Некорректный пароль");
-        }
-        boolean result = false;
-        boolean found = false;
-        User user = new User(username, password);
-        try {
-            List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
-            for (User currentUser : users) {
-                if (currentUser.getUsername().equals(user.getUsername()) && currentUser.getPassword().equals(user.getPassword())) {
-                    result = currentUser.isAdmin();
-                    found = true;
-                }
-            }
-            if (!found) {
-                throw new ServiceException("Данного пользователя не существует");
-            }
-        } catch (DAOException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-        return result;
-    }
-
     public static User signIn(String username, String password) throws ServiceException {
         if (!isValidUsername(username)) {
             throw new ServiceException("Некорректное имя пользователя");
@@ -230,13 +206,14 @@ public class Service {
         if (!isValidPassword(password)) {
             throw new ServiceException("Некорректный пароль");
         }
+
         User user = new User(username, password);
+
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
             for (User curr : users) {
                 if (user.compareWithoutRights(curr)) {
-                    currentUser = user;
-                    return currentUser;
+                    return curr;
                 }
             }
         } catch (DAOException e) {
@@ -245,15 +222,12 @@ public class Service {
         return null;
     }
 
-    public static void signOut() {
-        currentUser = null;
-    }
-
-    public static User getCurrentUser() {
-        return currentUser;
-    }
-
-    public static void setCurrentUser(User currentUser) {
-        Service.currentUser = currentUser;
+    public static boolean hasUsers() throws ServiceException {
+        try {
+            List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
+            return !users.isEmpty();
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 }

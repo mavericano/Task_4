@@ -12,15 +12,13 @@ public class CommandProvider {
     private CommandProvider() {
         commands = new HashMap<>();
         commands.put("SIGN_IN", new SignIn());
-        commands.put("SIGN_OUT", new SignOut());
         commands.put("REGISTER", new Register());
         commands.put("FIND_BOOK", new FindBook());
         commands.put("DELETE_BOOK", new DeleteBook());
         commands.put("ADD_BOOK", new AddBook());
         commands.put("VIEW_BOOKS", new ViewBooks());
         commands.put("EDIT_BOOK", new EditBook());
-        commands.put("CHECK_RIGHTS", new CheckRights());
-        commands.put("GET_CURRENT_USER", new GetCurrentUser());
+        commands.put("HAS_USERS", new HasUsers());
     }
 
     public Command createCommand(RRContainer request) {
