@@ -54,6 +54,12 @@ public class User implements Serializable {
         return sb.toString();
     }
 
+    public boolean compareWithoutRights(User user) {
+        if (this == user) return true;
+        if (user == null) return false;
+        return Objects.equals(username, user.username) && Objects.equals(password, user.password);
+    }
+
     public String getUsername() {
         return username;
     }
@@ -83,7 +89,7 @@ public class User implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password);
+        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(isAdmin, user.isAdmin);
     }
 
     @Override

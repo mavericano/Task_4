@@ -20,6 +20,7 @@ public class CommandProvider {
         commands.put("VIEW_BOOKS", new ViewBooks());
         commands.put("EDIT_BOOK", new EditBook());
         commands.put("CHECK_RIGHTS", new CheckRights());
+        commands.put("GET_CURRENT_USER", new GetCurrentUser());
     }
 
     public Command createCommand(RRContainer request) {

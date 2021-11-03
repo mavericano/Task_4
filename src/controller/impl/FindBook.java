@@ -15,7 +15,7 @@ public class FindBook implements Command {
     public RRContainer execute(RRContainer request) {
         String name = (String) request.model.get("name");
         String author = (String) request.model.get("author");
-        int year = (int) request.model.get("year");
+        int year = request.model.get("year") == null ? 0 : (int) request.model.get("year");
         String genre = (String) request.model.get("genre");
 
         List<Book> books;

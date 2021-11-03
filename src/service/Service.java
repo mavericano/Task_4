@@ -223,7 +223,7 @@ public class Service {
         return result;
     }
 
-    public static boolean signIn(String username, String password) throws ServiceException {
+    public static User signIn(String username, String password) throws ServiceException {
         if (!isValidUsername(username)) {
             throw new ServiceException("Некорректное имя пользователя");
         }
@@ -233,15 +233,16 @@ public class Service {
         User user = new User(username, password);
         try {
             List<User> users = FactoryDAO.getInstance().getUserDAO().readUsers();
-            if (users.contains(user)) {
-                currentUser = user;
-                return true;
-            } else {
-                throw new ServiceException("Данного пользователя не существует");
+            for (User curr : users) {
+                if (user.compareWithoutRights(curr)) {
+                    currentUser = user;
+                    return currentUser;
+                }
             }
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage(), e);
         }
+        return null;
     }
 
     public static void signOut() {

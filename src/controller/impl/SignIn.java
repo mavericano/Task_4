@@ -1,5 +1,6 @@
 package controller.impl;
 
+import beans.User;
 import controller.Command;
 import controller.connection.RRContainer;
 import service.Service;
@@ -16,14 +17,14 @@ public class SignIn implements Command {
 
         Map<String, Object> model = new HashMap<>();
 
-        boolean result;
+        User currentUser;
         try {
-            result = Service.signIn(username, password);
+            currentUser = Service.signIn(username, password);
         } catch (ServiceException e) {
             model.put("message", e.getMessage());
             return new RRContainer("fail", model);
         }
-        model.put("signedIn", result);
+        model.put("user", currentUser);
         return new RRContainer("success", model);
     }
 }

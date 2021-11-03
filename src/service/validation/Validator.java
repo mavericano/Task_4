@@ -1,6 +1,8 @@
 package service.validation;
 
 import java.time.Year;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Validator {
 
@@ -9,8 +11,18 @@ public class Validator {
     }
 
     public static boolean isValidPassword(String password) {
-        return password.length() > 7 && password.matches("[a-z]+") && password.matches("[A-Z]+") &&
-                password.matches("[0-9]+");
+        Pattern pattern = Pattern.compile("[a-z]");
+        Matcher matcher = pattern.matcher(password);
+        boolean isValid = password.length() > 7;
+        isValid &= matcher.find();
+        pattern = Pattern.compile("[A-Z]");
+        matcher = pattern.matcher(password);
+        isValid &= matcher.find();
+        pattern = Pattern.compile("[0-9]");
+        matcher = pattern.matcher(password);
+        isValid &= matcher.find();
+
+        return isValid;
     }
 
     public static boolean isValidBookName(String name) {

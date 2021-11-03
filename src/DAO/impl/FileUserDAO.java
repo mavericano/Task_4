@@ -12,9 +12,11 @@ import java.util.List;
 
 public class FileUserDAO implements UserDAO {
 
+    private final String PATH = PropertiesHolder.getProperty("USERS_FILE_PATH");
+
     @Override
     public void addUser(User user) throws DAOException {
-        try (FileWriter fos = new FileWriter("resources/Users.txt", true)) {
+        try (FileWriter fos = new FileWriter(PATH, true)) {
             fos.append(user.toFileString()).append("\n");
         } catch (Exception e) {
             throw new DAOException("Файл пользователей не найден или повреждён");
@@ -25,7 +27,7 @@ public class FileUserDAO implements UserDAO {
     public List<User> readUsers() throws DAOException{
         List<User> result = new ArrayList<>();
         String current;
-        try (BufferedReader reader = new BufferedReader(new FileReader("resources/Users.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(PATH))) {
             while ((current = reader.readLine()) != null) {
                 result.add(new User(current));
             }
